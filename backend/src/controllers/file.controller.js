@@ -7,6 +7,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.model.js";
 
 const changeFiles = asyncHandler(async (req, res) => {
   const { name } = req.body;
@@ -50,12 +51,10 @@ const changeFiles = asyncHandler(async (req, res) => {
 
   const destinationDirectory = "../../public/temp/";
 
-  // Generate a unique filename (e.g., timestamp + random string)
   const uniqueFilename = `pdf_${Date.now()}_${Math.random()
     .toString(36)
     .substring(7)}.pdf`;
 
-  // Write the PDF data to the file
   const filePath = path.join(destinationDirectory, uniqueFilename);
   fs.writeFileSync(filePath, Buffer.from(mergedPdfBytes));
 
@@ -75,6 +74,11 @@ const changeFiles = asyncHandler(async (req, res) => {
   if (!files) {
     throw new ApiError(500, "Something went wrong while uploading to database");
   }
+
+  const user = await User.findById(req.user?.id);
+
+  user.files.push(files._id);
+  await user.save();
 
   return res
     .status(200)

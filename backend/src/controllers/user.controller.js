@@ -2,8 +2,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { File } from "../models/files.model.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -108,8 +109,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", accessToken)
-    .clearCookie("refreshToken", refreshToken)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out"));
 });
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -168,7 +169,34 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
-const getCurrentUser = asyncHandler(async (req, res) => {});
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+  if (!userId || !isValidObjectId(userId)) {
+    throw new ApiError(400, "Invalid User Id");
+  }
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: "files",
+        localField: "files",
+        foreignField: "_id",
+        as: "files",
+      },
+    },
+  ]);
+  if (!user?.length) {
+    throw new ApiError(404, "No files found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user[0], "All files fecthed successfully"));
+});
 
 export {
   registerUser,
