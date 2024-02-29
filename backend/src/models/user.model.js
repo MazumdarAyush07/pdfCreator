@@ -26,6 +26,12 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
+    files: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "File",
+      },
+    ],
   },
   { timestamps: true }
 );
