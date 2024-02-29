@@ -7,9 +7,17 @@ const fileSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    path: {
+    orginal: {
       type: String,
       required: true,
+    },
+    modified: {
+      type: String,
+      required: true,
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {
