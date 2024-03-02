@@ -103,4 +103,24 @@ const deleteFiles = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "File has been deleted"));
 });
 
-export { changeFiles, deleteFiles };
+const getFileById = asyncHandler(async (req, res) => {
+  const { fileId } = req.params;
+  if (!fileId || !isValidObjectId(fileId)) {
+    throw new ApiError(400, "Invalid id");
+  }
+
+  const file = await File.findById(fileId).select("-orginal");
+
+  if (!file) {
+    throw new ApiError(404, "File not found");
+  }
+  if (req.user?._id.toString() !== file?.owner.toString()) {
+    throw new ApiError(401, "You are not authorized to access this");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, file, "File fetched successfully"));
+});
+
+export { changeFiles, deleteFiles, getFileById };
