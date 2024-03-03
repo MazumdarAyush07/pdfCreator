@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const PdfHandler = () => {
   const [fileName, setFileName] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
   const [pagesInput, setPagesInput] = useState("");
-  const [selectedPages, setSelectedPages] = useState([]);
+  const [selectedPages, setSelectedPages] = useState("");
+  const [newFile, setNewFile] = useState("");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -24,70 +26,104 @@ const PdfHandler = () => {
       .split(",")
       .map((page) => parseInt(page.trim(), 10))
       .filter((page) => !isNaN(page));
-    setSelectedPages(pagesArray);
+    setSelectedPages(pagesArray.join(",")); // Join selected pages into comma-separated string
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Here you can handle the submission of the PDF file, its associated file name,
-    // and the selected pages array
+
     console.log("File Name:", fileName);
     console.log("PDF File:", pdfFile);
     console.log("Selected Pages:", selectedPages);
-    // Reset the form after submission
+
+    const formData = new FormData();
+    formData.append("name", fileName);
+    formData.append("pdfFile", pdfFile);
+    formData.append("selectedPages", selectedPages); // Send selected pages as comma-separated string
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/file/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setNewFile(response.data.data.modified);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
     setFileName("");
     setPdfFile(null);
     setPagesInput("");
-    setSelectedPages([]);
+    setSelectedPages("");
   };
 
   return (
-    <div className="bg-gradient-to-b from-blue-400 to-blue-600 p-6 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold text-white mb-4">PDF Handler</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="fileName" className="text-white">
-            File Name:
-          </label>
-          <input
-            type="text"
-            id="fileName"
-            value={fileName}
-            onChange={handleFileNameChange}
-            className="bg-white text-gray-900 rounded-md px-4 py-2 w-full"
-          />
+    <div>
+      <div className="bg-gradient-to-b from-blue-400 to-blue-600 p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-white mb-4">PDF Handler</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="fileName" className="text-white">
+              File Name:
+            </label>
+            <input
+              type="text"
+              id="fileName"
+              value={fileName}
+              onChange={handleFileNameChange}
+              className="bg-white text-gray-900 rounded-md px-4 py-2 w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="pdfFile" className="text-white">
+              PDF File:
+            </label>
+            <input
+              type="file"
+              id="pdfFile"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="bg-white text-gray-900 rounded-md px-4 py-2 w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="pages" className="text-white">
+              Pages (comma-separated integers):
+            </label>
+            <input
+              type="text"
+              id="pages"
+              value={pagesInput}
+              onChange={handlePagesChange}
+              className="bg-white text-gray-900 rounded-md px-4 py-2 w-full"
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-white text-blue-600 rounded-md px-4 py-2 font-semibold hover:bg-blue-600 hover:text-white transition-colors duration-300"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+      {newFile && (
+        <div className="mt-4">
+          <a
+            href={newFile}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-green-500 text-white rounded-md px-4 py-2 font-semibold hover:bg-green-600 hover:text-white transition-colors duration-300 inline-block"
+          >
+            Download New File
+          </a>
         </div>
-        <div>
-          <label htmlFor="pdfFile" className="text-white">
-            PDF File:
-          </label>
-          <input
-            type="file"
-            id="pdfFile"
-            accept=".pdf"
-            onChange={handleFileChange}
-            className="bg-white text-gray-900 rounded-md px-4 py-2 w-full"
-          />
-        </div>
-        <div>
-          <label htmlFor="pages" className="text-white">
-            Pages (comma-separated integers):
-          </label>
-          <input
-            type="text"
-            id="pages"
-            value={pagesInput}
-            onChange={handlePagesChange}
-            className="bg-white text-gray-900 rounded-md px-4 py-2 w-full"
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-white text-blue-600 rounded-md px-4 py-2 font-semibold hover:bg-blue-600 hover:text-white transition-colors duration-300"
-        >
-          Submit
-        </button>
-      </form>
+      )}
     </div>
   );
 };
