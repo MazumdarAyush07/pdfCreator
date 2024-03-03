@@ -26,20 +26,16 @@ const PdfHandler = () => {
       .split(",")
       .map((page) => parseInt(page.trim(), 10))
       .filter((page) => !isNaN(page));
-    setSelectedPages(pagesArray.join(",")); // Join selected pages into comma-separated string
+    setSelectedPages(pagesArray.join(","));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("File Name:", fileName);
-    console.log("PDF File:", pdfFile);
-    console.log("Selected Pages:", selectedPages);
-
     const formData = new FormData();
     formData.append("name", fileName);
     formData.append("pdfFile", pdfFile);
-    formData.append("selectedPages", selectedPages); // Send selected pages as comma-separated string
+    formData.append("selectedPages", selectedPages);
 
     try {
       const response = await axios.post(
@@ -63,8 +59,8 @@ const PdfHandler = () => {
   };
 
   return (
-    <div>
-      <div className="bg-gradient-to-b from-blue-400 to-blue-600 p-6 rounded-lg shadow-lg">
+    <div className="container mx-auto px-4">
+      <div className="bg-gradient-to-b from-blue-400 to-blue-600 p-6 rounded-lg shadow-lg mb-4">
         <h2 className="text-2xl font-semibold text-white mb-4">PDF Handler</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -105,14 +101,14 @@ const PdfHandler = () => {
           </div>
           <button
             type="submit"
-            className="bg-white text-blue-600 rounded-md px-4 py-2 font-semibold hover:bg-blue-600 hover:text-white transition-colors duration-300"
+            className="bg-white text-blue-600 rounded-md px-4 py-2 font-semibold hover:bg-blue-600 hover:text-white transition-colors duration-300 w-full md:w-auto"
           >
             Submit
           </button>
         </form>
       </div>
       {newFile && (
-        <div className="mt-4">
+        <div className="text-center">
           <a
             href={newFile}
             download
