@@ -10,7 +10,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 
 const changeFiles = asyncHandler(async (req, res) => {
-  const { name } = req.body;
+  const { name, selectedPages } = req.body;
   if (!name) {
     throw new ApiError(400, "Name should be mentioned");
   }
@@ -30,13 +30,13 @@ const changeFiles = asyncHandler(async (req, res) => {
     await fetch(pdf.url).then((res) => res.arrayBuffer())
   );
 
-  const selectedPages = req.body.selectedPages.map((pageNumber) =>
-    parseInt(pageNumber, 10)
-  );
+  const selectedPagesArray = selectedPages
+    .split(",")
+    .map((pageNumber) => parseInt(pageNumber.trim(), 10));
 
   const mergedPdfDoc = await PDFDocument.create();
 
-  for (const pageNumber of selectedPages) {
+  for (const pageNumber of selectedPagesArray) {
     if (pageNumber > 0 && pageNumber <= pdfDoc.getPageCount()) {
       const [copiedPage] = await mergedPdfDoc.copyPages(pdfDoc, [
         pageNumber - 1,
@@ -98,6 +98,9 @@ const deleteFiles = asyncHandler(async (req, res) => {
   }
 
   await File.findByIdAndDelete(fileId);
+
+  await User.updateOne({ _id: req.user._id }, { $pull: { files: fileId } });
+
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "File has been deleted"));
@@ -109,7 +112,7 @@ const getFileById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid id");
   }
 
-  const file = await File.findById(fileId).select("-orginal");
+  const file = await File.findById(fileId);
 
   if (!file) {
     throw new ApiError(404, "File not found");
