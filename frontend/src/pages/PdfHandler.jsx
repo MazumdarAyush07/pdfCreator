@@ -7,6 +7,7 @@ const PdfHandler = () => {
   const [pagesInput, setPagesInput] = useState("");
   const [selectedPages, setSelectedPages] = useState("");
   const [newFile, setNewFile] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -31,6 +32,13 @@ const PdfHandler = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true); // Set loading state to true
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      console.error("Not authenticated");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", fileName);
@@ -44,6 +52,7 @@ const PdfHandler = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -52,6 +61,7 @@ const PdfHandler = () => {
       console.error("Error:", error);
     }
 
+    setIsLoading(false); // Set loading state to false after submission
     setFileName("");
     setPdfFile(null);
     setPagesInput("");
@@ -101,9 +111,12 @@ const PdfHandler = () => {
           </div>
           <button
             type="submit"
-            className="bg-white text-blue-600 rounded-md px-4 py-2 font-semibold hover:bg-blue-600 hover:text-white transition-colors duration-300 w-full md:w-auto"
+            className={`${
+              isLoading ? "bg-gray-300 cursor-not-allowed" : "bg-white"
+            } text-blue-600 rounded-md px-4 py-2 font-semibold hover:bg-blue-600 hover:text-white transition-colors duration-300 w-full md:w-auto`}
+            disabled={isLoading} // Disable button while loading
           >
-            Submit
+            {isLoading ? "Submitting..." : "Submit"}
           </button>
         </form>
       </div>
