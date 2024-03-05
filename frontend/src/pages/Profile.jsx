@@ -2,16 +2,24 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Profile = () => {
-  const [userData, setUserData] = useState(null);
-  const user = JSON.parse(localStorage.getItem("user"));
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
       window.location.href = "/";
     }
   }, []);
+  const [userData, setUserData] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [loading, setLoading] = useState(false);
+
+  let mail, name;
+  if (user) {
+    name = user.username;
+    mail = user.email;
+  } else {
+    name = "";
+    mail = "";
+  }
 
   const fetchUserData = async () => {
     const token = localStorage.getItem("accessToken");
@@ -75,11 +83,11 @@ const Profile = () => {
         <div className="text-2xl font-bold mb-6">Profile</div>
         <div className="mb-4">
           <p className="font-bold">Username:</p>
-          <p>{user.username}</p>
+          <p>{name}</p>
         </div>
         <div className="mb-4">
           <p className="font-bold">Email:</p>
-          <p>{user.email}</p>
+          <p>{mail}</p>
         </div>
         <div className="text-center mb-4">
           <button
