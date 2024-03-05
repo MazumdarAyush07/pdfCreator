@@ -128,7 +128,7 @@ const Profile = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Modified Link
+                        Download Modified File
                       </a>
                     </td>
                     <td className="border px-4 py-2">
