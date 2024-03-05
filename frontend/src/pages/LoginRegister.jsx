@@ -24,7 +24,7 @@ const LoginRegister = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/login",
+        "https://pdfcreator-server.onrender.com/api/v1/users/login",
         {
           email: loginEmail,
           password: loginPassword,
@@ -52,7 +52,7 @@ const LoginRegister = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/register",
+        "https://pdfcreator-server.onrender.com/api/v1/users/register",
         {
           username: registerUsername,
           email: registerEmail,

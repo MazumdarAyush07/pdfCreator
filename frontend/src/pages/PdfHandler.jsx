@@ -54,7 +54,7 @@ const PdfHandler = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/file/",
+        "https://pdfcreator-server.onrender.com/api/v1/file/",
         formData,
         {
           headers: {
