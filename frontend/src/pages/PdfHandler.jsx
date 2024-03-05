@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const PdfHandler = () => {
@@ -8,6 +8,13 @@ const PdfHandler = () => {
   const [selectedPages, setSelectedPages] = useState("");
   const [newFile, setNewFile] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Add loading state
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      window.location.href = "/";
+    }
+  }, []);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
