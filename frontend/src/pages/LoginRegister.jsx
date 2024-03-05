@@ -37,8 +37,8 @@ const LoginRegister = () => {
         setError("");
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        document.cookie = `accessToken=${accessToken}; path=/`;
-        document.cookie = `refreshToken=${refreshToken}; path=/`;
+        localStorage.setItem("user", JSON.stringify(response.data.data.user));
+        console.log(response.data.data.user);
         setSuccessFlag(1);
       }
     } catch (error) {
@@ -132,16 +132,19 @@ const LoginRegister = () => {
                   required
                 />
               </div>
-
               {successFlag ? (
-                <Link to="/tools">
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                  >
-                    Tools
-                  </button>
-                </Link>
+                <div>
+                  <Link to="/tools">
+                    <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300">
+                      Tools
+                    </button>
+                  </Link>
+                  <Link to="/profile">
+                    <button className="w-full bg-blue-500 text-white py-2 rounded mt-2 hover:bg-blue-600 transition duration-300">
+                      Profile
+                    </button>
+                  </Link>
+                </div>
               ) : (
                 <button
                   type="submit"
