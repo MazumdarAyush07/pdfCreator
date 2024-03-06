@@ -7,7 +7,7 @@ const PdfHandler = () => {
   const [pagesInput, setPagesInput] = useState("");
   const [selectedPages, setSelectedPages] = useState("");
   const [newFile, setNewFile] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -54,7 +54,7 @@ const PdfHandler = () => {
 
     try {
       const response = await axios.post(
-        "https://pdfcreator-server.onrender.com/api/v1/file/",
+        "https://pdfcreator.onrender.com/api/v1/file/",
         formData,
         {
           headers: {
