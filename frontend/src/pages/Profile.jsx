@@ -30,7 +30,7 @@ const Profile = () => {
 
     try {
       const response = await axios.get(
-        "https://pdfcreator.onrender.com/api/v1/users/get-currentuser",
+        "http://localhost:8000/api/v1/users/get-currentuser",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -52,7 +52,7 @@ const Profile = () => {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
       const response = await axios.delete(
-        `https://pdfcreator.onrender.com/api/v1/file/delete/${fileId}`,
+        `http://localhost:8000/api/v1/file/delete/${fileId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
