@@ -12,6 +12,7 @@ const LoginRegister = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [successFlag, setSuccessFlag] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -21,6 +22,7 @@ const LoginRegister = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await axios.post(
@@ -45,10 +47,13 @@ const LoginRegister = () => {
       setError(error.response.data.message || "Login failed");
       setSuccessMessage("");
     }
+
+    setLoading(false);
   };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await axios.post(
@@ -68,6 +73,8 @@ const LoginRegister = () => {
       setError(error.response.data.message || "Registration failed");
       setSuccessMessage("");
     }
+
+    setLoading(false);
   };
 
   return (
@@ -135,7 +142,14 @@ const LoginRegister = () => {
                     required
                   />
                 </div>
-                {successFlag ? (
+                {loading ? (
+                  <button
+                    className="w-full bg-blue-500 text-white py-2 rounded cursor-not-allowed opacity-50"
+                    disabled
+                  >
+                    Loading...
+                  </button>
+                ) : successFlag ? (
                   <div>
                     <Link to="/tools">
                       <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300">
@@ -208,12 +222,21 @@ const LoginRegister = () => {
                     required
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                >
-                  Register
-                </button>
+                {loading ? (
+                  <button
+                    className="w-full bg-blue-500 text-white py-2 rounded cursor-not-allowed opacity-50"
+                    disabled
+                  >
+                    Registering...
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
+                  >
+                    Register
+                  </button>
+                )}
               </form>
             )}
           </div>
